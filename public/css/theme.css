@@ -1,0 +1,53 @@
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+}
+#themeToggle {
+  background: #fff;
+  border: none;
+  font-size: 1.5rem;
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+#themeToggle:hover {
+  background: #eee;
+}
+
+/* Dark Theme */
+body {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+body.dark {
+  background-color: #2c2c2c;
+  color: #eee;
+}
+body.dark .tool-panel,
+body.dark .tool-options,
+body.dark .toolBar,
+body.dark .sticky-pad {
+  background-color: #2c2c2c;
+  box-shadow: 0 1rem 2rem rgba(255,255,255,0.1);
+}
+body.dark input[type=range]::-webkit-slider-thumb {
+  background: #81d4fa;
+}
+body.dark .active {
+  background-color: #444;
+}
+
+/* Animation Enhancements */
+.tool-img:hover {
+  transform: scale(1.15);
+  transition: transform 0.3s ease;
+}
+.tool-panel,
+.tool-options,
+.sticky-pad {
+  transition: all 0.3s ease-in-out;
+}
