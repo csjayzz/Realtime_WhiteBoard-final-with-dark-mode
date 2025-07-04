@@ -55,6 +55,65 @@ board.addEventListener("mouseup", function () {
   }
 });
 
+// ------------------- TOUCH SUPPORT -------------------
+
+board.addEventListener("touchstart", function (e) {
+  e.preventDefault();
+  isMouseDown = true;
+  currentStroke = [];
+
+  const touch = e.touches[0];
+  let top = getLocation();
+
+  const point = {
+    x: touch.clientX,
+    y: touch.clientY - top,
+    identifier: "mousedown",
+    color: ctx.strokeStyle,
+    width: ctx.lineWidth
+  };
+
+  ctx.beginPath();
+  ctx.moveTo(point.x, point.y);
+  currentStroke.push(point);
+  socket.emit("mousedown", point);
+});
+
+board.addEventListener("touchmove", function (e) {
+  if (!isMouseDown) return;
+  e.preventDefault();
+
+  const now = Date.now();
+  if (now - lastEmit < throttleDelay) return;
+  lastEmit = now;
+
+  const touch = e.touches[0];
+  let top = getLocation();
+
+  const point = {
+    x: touch.clientX,
+    y: touch.clientY - top,
+    identifier: "mousemove",
+    color: ctx.strokeStyle,
+    width: ctx.lineWidth
+  };
+
+  ctx.lineTo(point.x, point.y);
+  ctx.stroke();
+  currentStroke.push(point);
+  socket.emit("mousemove", point);
+});
+
+board.addEventListener("touchend", function (e) {
+  isMouseDown = false;
+  if (currentStroke.length > 1) {
+    undoStack.push([...currentStroke]);
+    redoStack = [];
+    socket.emit("mouseup", currentStroke);
+  }
+});
+
+
 const undo = document.querySelector(".undo");
 const redo = document.querySelector(".redo");
 
