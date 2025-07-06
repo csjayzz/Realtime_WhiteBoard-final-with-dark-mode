@@ -1,1 +1,1 @@
-# PepBoard
+# VanillaBoard
