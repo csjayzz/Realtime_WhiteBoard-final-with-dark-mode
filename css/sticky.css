@@ -82,3 +82,7 @@ cursor: pointer;
 .close:hover{
 cursor: pointer;
 }
+
+.sticky-pad {
+  will-change: left, top;
+}
