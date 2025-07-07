@@ -27,44 +27,75 @@ function createBox(){
       : (writingPad.style.display = "block");
     isMinimized = !isMinimized;
   });
-  let initialX = null;
-  let initialY = null;
-  let isStickyDown = false;
+let offsetX = 0;
+let offsetY = 0;
+let isDragging = false;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
 
-  // added move sticky logic
-  navBar.addEventListener("mousedown", function(e) {
-    initialX = e.clientX;
-    initialY = e.clientY;
-    isStickyDown = true;
-  });
+navBar.addEventListener("mousedown", (e) => {
+  isDragging = true;
 
-  navBar.addEventListener("mousemove", function(e) {
-    if (isStickyDown == true) {
-      let finalX = e.clientX;
-      let finalY = e.clientY;
+  const rect = stickyPad.getBoundingClientRect();
+  dragOffsetX = e.clientX - rect.left;
+  dragOffsetY = e.clientY - rect.top;
 
-      let diffX = finalX - initialX;
-      let diffY = finalY - initialY;
+  // Ensure sticky starts at pixel values
+  stickyPad.style.left = rect.left + "px";
+  stickyPad.style.top = rect.top + "px";
+  stickyPad.style.transform = "none";
+  stickyPad.style.position = "absolute";
+  stickyPad.style.zIndex = Date.now(); // bring to top
+});
 
-      let { top, left } = stickyPad.getBoundingClientRect();
+document.addEventListener("mousemove", (e) => {
+  if (!isDragging) return;
+  stickyPad.style.left = (e.clientX - dragOffsetX) + "px";
+  stickyPad.style.top = (e.clientY - dragOffsetY) + "px";
+});
 
-      stickyPad.style.top = top + diffY + "px";
-      stickyPad.style.left = left + diffX + "px";
+document.addEventListener("mouseup", () => {
+  isDragging = false;
+});
 
-      initialX = finalX;
-      initialY = finalY;
-    }
-  });
-  // sticky => mouseup
-  navBar.addEventListener("mouseup", function() {
-    isStickyDown = false;
-  });
-  // pointer => moved off sticky
-  navBar.addEventListener("mouseleave", function() {
-    isStickyDown = false;
-  });
-  document.body.appendChild(stickyPad);
+// TOUCH EVENTS
+navBar.addEventListener("touchstart", (e) => {
+  isDragging = true;
+  const rect = stickyPad.getBoundingClientRect();
+  dragOffsetX = e.touches[0].clientX - rect.left;
+  dragOffsetY = e.touches[0].clientY - rect.top;
+
+  stickyPad.style.left = rect.left + "px";
+  stickyPad.style.top = rect.top + "px";
+  stickyPad.style.transform = "none";
+  stickyPad.style.position = "absolute";
+  stickyPad.style.zIndex = Date.now();
+});
+
+document.addEventListener("touchmove", (e) => {
+  if (!isDragging) return;
+  stickyPad.style.left = (e.touches[0].clientX - dragOffsetX) + "px";
+  stickyPad.style.top = (e.touches[0].clientY - dragOffsetY) + "px";
+});
+
+document.addEventListener("touchend", () => {
+  isDragging = false;
+});
+
+// Remove this line entirely (causes unwanted early mouseup):
+// navBar.addEventListener("mouseleave", function() {
+//   isStickyDown = false;
+// });
+
+   body.appendChild(stickyPad);
+
+  // FIX: force pixel position to avoid % jumpiness
+  const rect = stickyPad.getBoundingClientRect();
+  stickyPad.style.left = rect.left + "px";
+  stickyPad.style.top = rect.top + "px";
+
   return writingPad;
+
 
 }
 
